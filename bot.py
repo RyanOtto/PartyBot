@@ -4,14 +4,13 @@ from discord.ext import commands
 import asyncio
 import random 
 
-#TODO: Merge list into string
-
-Client = discord.Client() 
+Client = discord.Client()
 client = commands.Bot(command_prefix='.') 
 word = ""
 guessesLeft = 6
 playingHangman = False
 blanks = []
+guessedLetters=[]
 lettersFound = 0
 
 
@@ -29,11 +28,16 @@ async def hangman():
     global word
     global guessesLeft
     global blanks
+    global lettersFound
+    global guessedLetters
     word="test"
+    blanks = []
+    guessedLetters = []
+    lettersFound = 0
+    guessesLeft = 6
     playingHangman = True
     for i in range(0, len(word)):
         blanks .append("-")
-    guessesLeft = 6
     await client.say("""`                                                                                 
   _                                   
  | |_  ____ _ _  __ _ _ __  __ _ _ _  
@@ -45,45 +49,46 @@ async def hangman():
     await client.say("Welcome to hangman.")
     await client.say("You have " + str(guessesLeft) + " "
                                                       "guesses to get all of the letters in the word.  "
-                                                      "To guess a letter, type .guess letter \n" + str(blanks))
+                                                      "To guess a letter, type .guess letter \n" + " ".join(blanks))
 
 @client.command()
 async def guess(guess):
     global playingHangman
+    global word
+    global guessesLeft
+    global blanks
+    global lettersFound
+    global guessedLetters
     if playingHangman is True:
-        if str.isalpha(guess) and len(guess) is 1:
-            global word
-            global guessesLeft
-            global blanks
-            global lettersFound
-            if guess in word:
-                await client.say(guess + " is in the word.  Good job!  Guess again!")
+        if str.isalpha(guess) and len(guess) is 1 and str.lower(guess) not in guessedLetters:
+            if str.lower(guess) in word:
+                await client.say(guess + " is in the word.  Good job!")
                 for i in range(0, len(word)):
-                    if word[i] == guess:
-                        blanks[i] = guess
+                    if word[i] == str.lower(guess):
+                        blanks[i] = str.lower(guess)
                         lettersFound += 1
-                await client.say(blanks)
+
             else:
-                await client.say(guess + " is NOT in the word.  Guess again!")
+                await client.say(guess + " is NOT in the word.")
                 guessesLeft -= 1
+
+            guessedLetters.append(str.lower(guess))
+            await client.say(" ".join(blanks))
+            await client.say("Guessed letters: " + " ".join(guessedLetters))
             await client.say("Guesses left: " + str(guessesLeft))
+
             if guessesLeft == 0:
                 await client.say("No guesses left.  You lose!")
                 playingHangman = False
             elif lettersFound == len(word):
                 await client.say("You guessed all the letters!  You've won!  The word was: " + word)
                 playingHangman = False
+
         else:
-            await client.say("ERROR: You can only guess with single letters.")
+            await client.say("ERROR: You can only guess with single letters that haven't already been entered.")
+            await client.say("Guessed letters: " + " ".join(guessedLetters))
+
     else: await client.say("Start a game of Hangman with .hangman before trying to guess a letter!")
 
-
-
-
-
-@client.command()
-async def joined(member : discord.Member):
-    """Says when a member joined."""
-    await client.say('{0.name} joined in {0.joined_at}'.format(member))
 
 client.run("")
