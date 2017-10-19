@@ -21,6 +21,43 @@ async def on_ready():
     print("Name: {}".format(client.user.name)) 
     print("ID: {}".format(client.user.id)) 
 
+@client.command()
+async def blackjack():
+    await client.say("""`
+    
+ _     _            _     _            _    
+| |__ | | __ _  ___| | __(_) __ _  ___| | __
+|  _ \| |/ _  |/ __| |/ /| |/ _  |/ __| |/ /
+| |_) | | (_| | (__|   < | | (_| | (__|   < 
+|_ __/|_|\__,_|\___|_|\_\/ |\__ _|\___|_|\_
+                       |__/                 
+                                       
+                                                                   
+    `""")
+    dealerValue = 0
+    playerValue = 0
+    dealerCards=[]
+    playerCards=[]
+    dealerNumAces=0
+    playerNumAces=0
+    cardNames={1:'One',2:'Two',3:'Three',4:'Four',5:'Five',6:'Six',7:'Seven',8:'Eight',9:'Nine',10:'Ten',11:'Jack',12:'Queen',13:'King',14:'Ace'}
+    cardValues = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:10, 12:10, 13:10, 14:11}
+
+    while dealerValue < 17:
+        nextCard = random.randrange(1,15)
+        if nextCard is 14: dealerNumAces += 1
+        dealerCards.append(cardNames[nextCard])
+        dealerValue += cardValues[nextCard]
+        while dealerValue > 21:
+            if(dealerNumAces > 0):
+                dealerValue -= 10
+                dealerNumAces -= 1
+            else: break
+        print("Dealer value: " + str(dealerValue))
+        print("Dealer cards: " + str.join(" ", dealerCards))
+    await client.say("Bot went!")
+
+
 
 
 @client.command()
@@ -44,10 +81,10 @@ async def hangman():
     playingHangman = True
     for i in range(1, len(word)):
         blanks .append("-")
-    await client.say("""`                                                                                 
+    await client.say("""`                                                                      
   _                                   
  | |_  ____ _ _  __ _ _ __  __ _ _ _  
- | ' \/ _  | ' \/ _' | '  \/ _' | ' \ 
+ | - \/ -  | - \/ -  |  - \/ -  | - \ 
  |_||_\__,_|_||_\__, |_|_|_\__,_|_||_|
                 |___/                                                                                                   
 `""")
