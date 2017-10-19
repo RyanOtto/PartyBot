@@ -1,4 +1,4 @@
-import discord 
+import discord
 from discord.ext.commands import Bot
 from discord.ext import commands 
 import asyncio
@@ -7,6 +7,7 @@ import random
 Client = discord.Client()
 client = commands.Bot(command_prefix='.')
 
+#Hangman variables
 word = ""
 guessesLeft = 6
 playingHangman = False
@@ -14,12 +15,50 @@ blanks = []
 guessedLetters=[]
 lettersFound = 0
 
+#Blackjack variables
+playingBlackJack = False
+dealerValue = 0
+playerValue = 0
+dealerCards = []
+playerCards = []
+dealerNumAces = 0
+playerNumAces = 0
+cardNames = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
+             10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
+cardValues = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 10, 12: 10, 13: 10, 14: 11}
+
 
 @client.event 
 async def on_ready(): 
     print("Bot Online!") 
     print("Name: {}".format(client.user.name)) 
     print("ID: {}".format(client.user.id)) 
+
+
+
+
+
+
+async def endBlackJack():
+    global dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
+    await client.say("Player value: " + str(playerValue))
+    await client.say("Player cards: " + str.join(" ", playerCards))
+    await client.say("Dealer value: " + str(dealerValue))
+    await client.say("Dealer cards: " + str.join(" ", dealerCards))
+    if(playerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue < dealerValue):
+        await client.say("You lose!")
+    elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
+        await client.say("You win!")
+    dealerValue = 0
+    playerValue = 0
+    dealerCards = []
+    playerCards = []
+    dealerNumAces = 0
+    playerNumAces = 0
+
+#TODO: Show first dealer card
+#TODO: Initially deal player 2 cards
+#TODO: Test
 
 @client.command()
 async def blackjack():
@@ -34,14 +73,8 @@ async def blackjack():
                                        
                                                                    
     `""")
-    dealerValue = 0
-    playerValue = 0
-    dealerCards=[]
-    playerCards=[]
-    dealerNumAces=0
-    playerNumAces=0
-    cardNames={1:'One',2:'Two',3:'Three',4:'Four',5:'Five',6:'Six',7:'Seven',8:'Eight',9:'Nine',10:'Ten',11:'Jack',12:'Queen',13:'King',14:'Ace'}
-    cardValues = {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7, 8:8, 9:9, 10:10, 11:10, 12:10, 13:10, 14:11}
+    global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
+    playingBlackJack = True
 
     while dealerValue < 17:
         nextCard = random.randrange(1,15)
@@ -55,24 +88,60 @@ async def blackjack():
             else: break
         print("Dealer value: " + str(dealerValue))
         print("Dealer cards: " + str.join(" ", dealerCards))
-    await client.say("Bot went!")
+    await client.say("Say .hit to be dealt another card, and .stay to stick with your current total value.")
+
+
+@client.command()
+async def hit():
+    if playingBlackJack is False:
+        await client.say("Type .blackjack to begin a game of blackjack")
+        return
+    global playerValue, playerCards, playerNumAces
+    nextCard = random.randrange(1, 15)
+    if nextCard is 14: playerNumAces += 1
+    playerCards.append(cardNames[nextCard])
+    playerValue += cardValues[nextCard]
+    while playerValue > 21:
+        if (playerNumAces > 0):
+            playerValue -= 10
+            playerNumAces -= 1
+        else:
+            await endBlackJack()
+            break
+    await client.say("Player value: " + str(playerValue))
+    await client.say("Player cards: " + str.join(" ", playerCards))
+
+
+@client.command()
+async def stay():
+    if playingBlackJack is False:
+        await client.say("Type .blackjack to begin a game of blackjack")
+        return
+    await endBlackJack()
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 @client.command()
 async def hangman():
-    global playingHangman
-    global word
-    global guessesLeft
-    global blanks
-    global lettersFound
-    global guessedLetters
+    global playingHangman, word, guessesLeft, blanks, lettersFound, guessedLetters
     lines = []
     with open("hangmanwords.txt", "r") as f:
         lines = f.readlines()
     random_line_num = random.randrange(0, len(lines))
     word = lines[random_line_num]
+    print(word)
     f.close()
     blanks = []
     guessedLetters = []
@@ -119,11 +188,13 @@ async def guess(guess):
             await client.say(" ".join(blanks))
             await client.say("Guessed letters: " + " ".join(guessedLetters))
             await client.say("Guesses left: " + str(guessesLeft))
+            #print(lettersFound)
+            #print(len(word))
 
             if guessesLeft == 0:
                 await client.say("No guesses left.  You lose!")
                 playingHangman = False
-            elif lettersFound == len(word):
+            if lettersFound == len(word)-1:
                 await client.say("You guessed all the letters!  You've won!  The word was: " + word)
                 playingHangman = False
 
