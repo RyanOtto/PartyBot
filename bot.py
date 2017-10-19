@@ -52,13 +52,13 @@ async def printCards(playerOrComputer):
 async def resetBlackJack(finishedOrReset):
     global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
     if finishedOrReset is 0:
-        await printCards(3)
+        await printCards(3) #Print both player and AI's values and cards
         if(playerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue < dealerValue):
             await client.say("You lose!")
         elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
             await client.say("You win!")
         playingBlackJack = False
-    dealerValue = 0
+    dealerValue = 0,
     playerValue = 0
     dealerCards = []
     playerCards = []
@@ -101,7 +101,7 @@ async def blackjack():
     #print("Dealer cards: " + str.join(" ", dealerCards))
     await client.say("Say .hit to be dealt another card, and .stay to stick with your current total value.")
     await client.say("Dealer's first card is: " + dealerCards[0])
-    await printCards(1)
+    await printCards(1) #Print player cards/value
 
 @client.command()
 async def hit():
@@ -120,14 +120,14 @@ async def hit():
         else:
             await resetBlackJack(0)
             break
-    await printCards(1)
+    await printCards(1) #Print player cards/value
 
 @client.command()
 async def stay():
     if playingBlackJack is False:
         await client.say("Type .blackjack to begin a game of blackjack")
         return
-    await resetBlackJack(0)
+    await resetBlackJack(0) #End the game
 
 
 
