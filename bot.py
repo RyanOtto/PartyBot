@@ -5,7 +5,8 @@ import asyncio
 import random 
 
 Client = discord.Client()
-client = commands.Bot(command_prefix='.') 
+client = commands.Bot(command_prefix='.')
+
 word = ""
 guessesLeft = 6
 playingHangman = False
@@ -30,7 +31,13 @@ async def hangman():
     global blanks
     global lettersFound
     global guessedLetters
-    word="test"
+    lines = []
+    with open("hangmanwords.txt", "r") as f:
+        lines = f.readlines()
+    random_line_num = random.randrange(0, len(lines))
+    word = lines[random_line_num]
+    print(word)
+    f.close()
     blanks = []
     guessedLetters = []
     lettersFound = 0
