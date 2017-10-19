@@ -36,14 +36,13 @@ async def hangman():
         lines = f.readlines()
     random_line_num = random.randrange(0, len(lines))
     word = lines[random_line_num]
-    print(word)
     f.close()
     blanks = []
     guessedLetters = []
     lettersFound = 0
     guessesLeft = 6
     playingHangman = True
-    for i in range(0, len(word)):
+    for i in range(1, len(word)):
         blanks .append("-")
     await client.say("""`                                                                                 
   _                                   
