@@ -36,19 +36,28 @@ async def on_ready():
 
 
 
+async def printCards(playerOrComputer):
+    if playerOrComputer is 1:
+        await client.say("Your value: " + str(playerValue))
+        await client.say("Your cards: " + str.join(" ", playerCards))
+    elif playerOrComputer is 2:
+        await client.say("Dealer value: " + str(dealerValue))
+        await client.say("Dealer cards: " + str.join(" ", dealerCards))
+    elif playerOrComputer is 3:
+        await client.say("Your value: " + str(playerValue))
+        await client.say("Your cards: " + str.join(" ", playerCards))
+        await client.say("Dealer value: " + str(dealerValue))
+        await client.say("Dealer cards: " + str.join(" ", dealerCards))
 
-
-
-async def endBlackJack():
-    global dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
-    await client.say("Player value: " + str(playerValue))
-    await client.say("Player cards: " + str.join(" ", playerCards))
-    await client.say("Dealer value: " + str(dealerValue))
-    await client.say("Dealer cards: " + str.join(" ", dealerCards))
-    if(playerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue < dealerValue):
-        await client.say("You lose!")
-    elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
-        await client.say("You win!")
+async def resetBlackJack(finishedOrReset):
+    global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
+    if finishedOrReset is 0:
+        await printCards(3)
+        if(playerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue < dealerValue):
+            await client.say("You lose!")
+        elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
+            await client.say("You win!")
+        playingBlackJack = False
     dealerValue = 0
     playerValue = 0
     dealerCards = []
@@ -56,26 +65,21 @@ async def endBlackJack():
     dealerNumAces = 0
     playerNumAces = 0
 
-#TODO: Show first dealer card
-#TODO: Initially deal player 2 cards
-#TODO: Test
-
 @client.command()
 async def blackjack():
     await client.say("""`
-    
  _     _            _     _            _    
 | |__ | | __ _  ___| | __(_) __ _  ___| | __
 |  _ \| |/ _  |/ __| |/ /| |/ _  |/ __| |/ /
 | |_) | | (_| | (__|   < | | (_| | (__|   < 
 |_ __/|_|\__,_|\___|_|\_\/ |\__ _|\___|_|\_
-                       |__/                 
-                                       
-                                                                   
+                       |__/                                                                           
     `""")
+    await resetBlackJack(1)
     global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
     playingBlackJack = True
 
+    #Simulate dealer's turn
     while dealerValue < 17:
         nextCard = random.randrange(1,15)
         if nextCard is 14: dealerNumAces += 1
@@ -86,10 +90,18 @@ async def blackjack():
                 dealerValue -= 10
                 dealerNumAces -= 1
             else: break
-        print("Dealer value: " + str(dealerValue))
-        print("Dealer cards: " + str.join(" ", dealerCards))
-    await client.say("Say .hit to be dealt another card, and .stay to stick with your current total value.")
 
+    #Give player 2 cards
+    for i in range(0,2):
+        nextCard = random.randrange(1, 15)
+        playerValue += cardValues[nextCard]
+        playerCards.append(cardNames[nextCard])
+
+    #print("Dealer value: " + str(dealerValue))
+    #print("Dealer cards: " + str.join(" ", dealerCards))
+    await client.say("Say .hit to be dealt another card, and .stay to stick with your current total value.")
+    await client.say("Dealer's first card is: " + dealerCards[0])
+    await printCards(1)
 
 @client.command()
 async def hit():
@@ -106,27 +118,16 @@ async def hit():
             playerValue -= 10
             playerNumAces -= 1
         else:
-            await endBlackJack()
+            await resetBlackJack(0)
             break
-    await client.say("Player value: " + str(playerValue))
-    await client.say("Player cards: " + str.join(" ", playerCards))
-
+    await printCards(1)
 
 @client.command()
 async def stay():
     if playingBlackJack is False:
         await client.say("Type .blackjack to begin a game of blackjack")
         return
-    await endBlackJack()
-
-
-
-
-
-
-
-
-
+    await resetBlackJack(0)
 
 
 
@@ -141,7 +142,7 @@ async def hangman():
         lines = f.readlines()
     random_line_num = random.randrange(0, len(lines))
     word = lines[random_line_num]
-    print(word)
+    #print(word)
     f.close()
     blanks = []
     guessedLetters = []
@@ -205,4 +206,4 @@ async def guess(guess):
     else: await client.say("Start a game of Hangman with .hangman before trying to guess a letter!")
 
 
-client.run("")
+client.run("MzY5ODUxMjYzNDgwODg5MzQ1.DMejkw.6VsoaZXCGYHAeYPTT24sifdG6eY")
