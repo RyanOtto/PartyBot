@@ -6,6 +6,7 @@ import random
 
 Client = discord.Client()
 client = commands.Bot(command_prefix='.')
+client.remove_command("help")
 
 #Hangman variables
 word = ""
@@ -39,6 +40,12 @@ async def on_ready():
     print("Bot Online!") 
     print("Name: {}".format(client.user.name)) 
     print("ID: {}".format(client.user.id))
+
+@client.command()
+async def help():
+    await client.say("`.hangman -> Start a new game of hangman"
+                     "\n.blackjack -> Start a new game of blackjack"
+                     "\n.rps -> Start a new game of rock, paper, scissors `")
 
 @client.command()
 async def rps():
