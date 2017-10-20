@@ -27,14 +27,83 @@ cardNames = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 
              10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
 cardValues = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 10, 12: 10, 13: 10, 14: 11}
 
+#Rock paper scissors variables (1 == rock, 2 == paper, 3 == scissors)
+playingRPS = False
+aiChoice = 0
+playerChoice = 0
+aiPoints = 0
+playerPoints = 0
 
 @client.event 
 async def on_ready(): 
     print("Bot Online!") 
     print("Name: {}".format(client.user.name)) 
-    print("ID: {}".format(client.user.id)) 
+    print("ID: {}".format(client.user.id))
 
+@client.command()
+async def rps():
+    await client.say("""`
+------           -     ------                        -----      -                        
+| ___ \         | |    | --- \                      /  ___|    (_)                       
+| |_/ /---   ---| | __ | |_/ /--- - --   ---  ----| \  --.  --- - --- ---  --- |----|--- 
+|    // _ \ /---| |/ / |  --/ _  |  _ \ / - \|  __|  ---. \/ __| / __/ __|/ _ \|  --| __|
+| |\ \ (_) | (__|   <  | | | (_| | |_) |  --/| |    /\__/ / (__| \__ \__ \ (_) | |  \__ 
+\_| \_\---/ \---|_|\_\ \_|  \__ _|  __/ \--- |_|    \____/ \___|_|___/___/\___/|_|  |___/
+                                 | |                                                    
+                                 |_|                                                                                                                                              
+    `""")
 
+    await client.say("Type .choose rock/paper/scissors to make your choice for the round.  First to 3 points wins! ")
+    global playingRPS
+    playingRPS = True
+
+@client.command()
+async def choose(rockPaperOrScissors):
+    global playingRPS, aiChoice, playerChoice, aiPoints, playerPoints
+
+    if playingRPS is False:
+        await client.say("Type .rps to play a game of rock paper scissors!")
+        return
+
+    #AI choice
+    aiChoice = random.randrange(1,4)
+    choiceList = {1:"rock", 2:"paper", 3:"scissors"}
+
+    #Player choice
+    if str.lower(rockPaperOrScissors) == "rock": playerChoice = 1
+    if str.lower(rockPaperOrScissors) == "paper": playerChoice = 2
+    if str.lower(rockPaperOrScissors) == "scissors": playerChoice = 3
+
+    #See who won
+    await client.say("You picked: " + rockPaperOrScissors + " and AI picked: " + choiceList[aiChoice] + ".")
+    if playerChoice is 1 and aiChoice is 3 or playerChoice is 2 and aiChoice is 1 or playerChoice is 3 and aiChoice is 2:
+        playerPoints += 1
+        await client.say("You win the round!")
+    elif playerChoice == aiChoice:
+        await client.say("Tie!")
+    else:
+        aiPoints += 1
+        await client.say("AI wins the round!")
+
+    #End game if someone hit 3 points
+    if playerPoints == 3:
+        await client.say("You hit 3 points.  You win!")
+        await endRPS()
+        return
+    if aiPoints == 3:
+        await client.say("AI hit 3 points.  You lose!")
+        await endRPS()
+        return
+    await client.say("Type .choose rock/paper/scissors to continue. ")
+    await client.say("SCORE -> Player: " + str(playerPoints) + " AI: " + str(aiPoints))
+
+async def endRPS():
+    global playingRPS, aiChoice, playerChoice, aiPoints, playerPoints
+    playingRPS = False
+    aiChoice = 0
+    playerChoice = 0
+    aiPoints = 0
+    playerPoints = 0
 
 async def printCards(playerOrComputer):
     if playerOrComputer is 1:
@@ -58,7 +127,7 @@ async def resetBlackJack(finishedOrReset):
         elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
             await client.say("You win!")
         playingBlackJack = False
-    dealerValue = 0,
+    dealerValue = 0
     playerValue = 0
     dealerCards = []
     playerCards = []
@@ -128,11 +197,6 @@ async def stay():
         await client.say("Type .blackjack to begin a game of blackjack")
         return
     await resetBlackJack(0) #End the game
-
-
-
-
-
 
 @client.command()
 async def hangman():
@@ -204,6 +268,5 @@ async def guess(guess):
             await client.say("Guessed letters: " + " ".join(guessedLetters))
 
     else: await client.say("Start a game of Hangman with .hangman before trying to guess a letter!")
-
 
 client.run("MzY5ODUxMjYzNDgwODg5MzQ1.DMejkw.6VsoaZXCGYHAeYPTT24sifdG6eY")
