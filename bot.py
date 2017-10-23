@@ -8,7 +8,7 @@ Client = discord.Client()
 client = commands.Bot(command_prefix='.')
 client.remove_command("help")
 
-#Hangman variables
+# Hangman variables
 word = ""
 guessesLeft = 6
 playingHangman = False
@@ -16,7 +16,7 @@ blanks = []
 guessedLetters=[]
 lettersFound = 0
 
-#Blackjack variables
+# Blackjack variables
 playingBlackJack = False
 dealerValue = 0
 playerValue = 0
@@ -28,12 +28,62 @@ cardNames = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 
              10: 'Ten', 11: 'Jack', 12: 'Queen', 13: 'King', 14: 'Ace'}
 cardValues = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 10, 12: 10, 13: 10, 14: 11}
 
-#Rock paper scissors variables (1 == rock, 2 == paper, 3 == scissors)
+# Rock paper scissors variables (1 == rock, 2 == paper, 3 == scissors)
 playingRPS = False
 aiChoice = 0
 playerChoice = 0
 aiPoints = 0
 playerPoints = 0
+
+# Riddle variables
+answering = False
+riddle = ""
+riddleAnswer = ""
+riddleLine = 0
+riddleGuessesLeft = 3
+prevRiddleLine = 0
+
+@client.command()
+async def riddle():
+    global riddle, riddleLine, prevRiddleLine, riddleAnswer, riddleGuessesLeft, answering
+    answering = True
+    riddle = ""
+    riddleAnswer = ""
+    riddleGuessesLeft = 3
+
+    with open("riddles.txt", "r") as f:
+        lines = f.readlines()
+    while riddle == "" or "=" in riddle or riddleLine == prevRiddleLine:
+        riddleLine = random.randrange(0, len(lines))
+        riddle = lines[riddleLine]
+        riddleAnswer = lines[riddleLine+1]
+    prevRiddleLine = riddleLine
+    f.close()
+
+    riddleAnswer = riddleAnswer.replace("=", "")
+    riddleAnswer = riddleAnswer.replace(" ", "")
+
+    await client.say("Use .answer <word> to solve the riddle.  All answers to these riddles will be one word or number.  You have three guesses per riddle.\n\n" + "`"+riddle+"`")
+
+@client.command()
+async def answer(userAnswer):
+    global riddleAnswer, riddleGuessesLeft, answering
+
+    if answering is False:
+        await client.say("Use .riddle to receive another riddle")
+        return
+
+    userAnswer = userAnswer.strip()
+    riddleAnswer = riddleAnswer.strip()
+
+    if str.lower(userAnswer) == str.lower(riddleAnswer):
+        await client.say("Correct!")
+        answering = False
+    else:
+        riddleGuessesLeft -= 1
+        await client.say("Incorrect!  Guesses left:" + str(riddleGuessesLeft))
+    if riddleGuessesLeft == 0:
+        await client.say("Out of guesses!  The answer was: " + riddleAnswer)
 
 @client.event 
 async def on_ready(): 
@@ -45,6 +95,7 @@ async def on_ready():
 async def help():
     await client.say("`.hangman -> Start a new game of hangman"
                      "\n.blackjack -> Start a new game of blackjack"
+                     "\n.riddle -> Get a riddle to answer"
                      "\n.rps -> Start a new game of rock, paper, scissors `")
 
 @client.command()
@@ -213,7 +264,6 @@ async def hangman():
         lines = f.readlines()
     random_line_num = random.randrange(0, len(lines))
     word = lines[random_line_num]
-    #print(word)
     f.close()
     blanks = []
     guessedLetters = []
