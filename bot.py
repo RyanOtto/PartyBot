@@ -2,7 +2,9 @@ import discord
 from discord.ext.commands import Bot
 from discord.ext import commands 
 import asyncio
-import random 
+import random
+from bs4 import BeautifulSoup
+import urllib.request
 
 Client = discord.Client()
 client = commands.Bot(command_prefix='.')
@@ -42,6 +44,15 @@ riddleAnswer = ""
 riddleLine = 0
 riddleGuessesLeft = 3
 prevRiddleLine = 0
+
+@client.command()
+async def search(word):
+    url = 'http://www.dictionary.com/browse/' + word
+    page = urllib.request.urlopen(url)
+    soup = BeautifulSoup(page.read(), "html.parser")
+    header = soup.find( "header", {"class":"luna-data-header"} ).text
+    definition = soup.find( "div", {"class":"def-set"} ).text
+    await client.say(word + ":" + header + definition[3:])
 
 @client.command()
 async def riddle():
@@ -93,10 +104,11 @@ async def on_ready():
 
 @client.command()
 async def help():
-    await client.say("`.hangman -> Start a new game of hangman"
+    await client.say("`GAMES\n.hangman -> Start a new game of hangman"
                      "\n.blackjack -> Start a new game of blackjack"
                      "\n.riddle -> Get a riddle to answer"
-                     "\n.rps -> Start a new game of rock, paper, scissors `")
+                     "\n.rps -> Start a new game of rock, paper, scissors "
+                     "\nUTILITY\n.search <word> to search for a word's definition`")
 
 @client.command()
 async def rps():
