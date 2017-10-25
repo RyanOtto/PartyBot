@@ -46,13 +46,26 @@ riddleGuessesLeft = 3
 prevRiddleLine = 0
 
 @client.command()
-async def search(word):
-    url = 'http://www.dictionary.com/browse/' + word
+async def search(*, word):
+    linkWord = word.replace(' ', '+')
+    url = 'http://www.dictionary.com/browse/' + linkWord
     page = urllib.request.urlopen(url)
     soup = BeautifulSoup(page.read(), "html.parser")
     header = soup.find( "header", {"class":"luna-data-header"} ).text
     definition = soup.find( "div", {"class":"def-set"} ).text
     await client.say(word + ":" + header + definition[3:])
+
+@client.command()
+async def usearch(*, word):
+    linkWord = word.replace(' ', '+')
+    url = 'https://www.urbandictionary.com/define.php?term=' + linkWord
+    page = urllib.request.urlopen(url)
+    soup = BeautifulSoup(page.read(), "html.parser")
+    definition = soup.find("div", {"class": "meaning"}).text
+    definition = definition.replace("&apos;", "")
+    example = soup.find("div", {"class": "example"}).text
+    example = example.replace("&apos;", "")
+    await client.say(word + ": " + definition + "\n\n" + example)
 
 @client.command()
 async def riddle():
@@ -108,7 +121,8 @@ async def help():
                      "\n.blackjack -> Start a new game of blackjack"
                      "\n.riddle -> Get a riddle to answer"
                      "\n.rps -> Start a new game of rock, paper, scissors "
-                     "\nUTILITY\n.search <word> to search for a word's definition`")
+                     "\nUTILITY\n.search <word> to search for a word's definition"
+                     "\n.usearch <word> to search for an urban dictionary word's definition`")
 
 @client.command()
 async def rps():
