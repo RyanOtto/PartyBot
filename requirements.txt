@@ -1,1 +1,2 @@
-chardet
+discord.py==0.16.8
+bs4
