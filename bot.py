@@ -352,4 +352,4 @@ async def guess(guess):
 
     else: await client.say("Start a game of Hangman with .hangman before trying to guess a letter!")
 
-client.run("MzY5ODUxMjYzNDgwODg5MzQ1.DMejkw.6VsoaZXCGYHAeYPTT24sifdG6eY")
+client.run("MzY5ODUxMjYzNDgwODg5MzQ1.DNaewg.wyl3GmVwFUvNUCxrW1H50g34iSw")
