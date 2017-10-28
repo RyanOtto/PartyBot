@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import urllib.request
 
 Client = discord.Client()
-client = commands.Bot(command_prefix='.')
+client = commands.Bot(command_prefix='$')
 client.remove_command("help")
 
 # Hangman variables
@@ -87,14 +87,14 @@ async def riddle():
     riddleAnswer = riddleAnswer.replace("=", "")
     riddleAnswer = riddleAnswer.replace(" ", "")
 
-    await client.say("Use .answer <word> to solve the riddle.  All answers to these riddles will be one word or number.  You have three guesses per riddle.\n\n" + "`"+riddle+"`")
+    await client.say("Use $answer <word> to solve the riddle.  All answers to these riddles will be one word or number.  You have three guesses per riddle.\n\n" + "`"+riddle+"`")
 
 @client.command()
 async def answer(userAnswer):
     global riddleAnswer, riddleGuessesLeft, answering
 
     if answering is False:
-        await client.say("Use .riddle to receive another riddle")
+        await client.say("Use $riddle to receive another riddle")
         return
 
     userAnswer = userAnswer.strip()
@@ -117,12 +117,12 @@ async def on_ready():
 
 @client.command()
 async def help():
-    await client.say("`GAMES\n.hangman -> Start a new game of hangman"
-                     "\n.blackjack -> Start a new game of blackjack"
-                     "\n.riddle -> Get a riddle to answer"
-                     "\n.rps -> Start a new game of rock, paper, scissors "
-                     "\nUTILITY\n.search <word> to search for a word's definition"
-                     "\n.usearch <word> to search for an urban dictionary word's definition`")
+    await client.say("`GAMES\n$hangman -> Start a new game of hangman"
+                     "\n$blackjack -> Start a new game of blackjack"
+                     "\n$riddle -> Get a riddle to answer"
+                     "\n$rps -> Start a new game of rock, paper, scissors "
+                     "\nUTILITY\n$search <word> to search for a word's definition"
+                     "\n$usearch <word> to search for an urban dictionary word's definition`")
 
 @client.command()
 async def rps():
@@ -137,7 +137,7 @@ async def rps():
                                  |_|                                                                                                                                              
     `""")
 
-    await client.say("Type .choose rock/paper/scissors to make your choice for the round.  First to 3 points wins! ")
+    await client.say("Type $choose rock/paper/scissors to make your choice for the round.  First to 3 points wins! ")
     global playingRPS
     playingRPS = True
 
@@ -146,7 +146,7 @@ async def choose(rockPaperOrScissors):
     global playingRPS, aiChoice, playerChoice, aiPoints, playerPoints
 
     if playingRPS is False:
-        await client.say("Type .rps to play a game of rock paper scissors!")
+        await client.say("Type $rps to play a game of rock paper scissors!")
         return
 
     #AI choice
@@ -178,7 +178,7 @@ async def choose(rockPaperOrScissors):
         await client.say("AI hit 3 points.  You lose!")
         await endRPS()
         return
-    await client.say("Type .choose rock/paper/scissors to continue. ")
+    await client.say("Type $choose <rock/paper/scissors> to continue. ")
     await client.say("SCORE -> Player: " + str(playerPoints) + " AI: " + str(aiPoints))
 
 async def endRPS():
@@ -252,14 +252,14 @@ async def blackjack():
 
     #print("Dealer value: " + str(dealerValue))
     #print("Dealer cards: " + str.join(" ", dealerCards))
-    await client.say("Say .hit to be dealt another card, and .stay to stick with your current total value.")
+    await client.say("Say $hit to be dealt another card, and $stay to stick with your current total value.")
     await client.say("Dealer's first card is: " + dealerCards[0])
     await printCards(1) #Print player cards/value
 
 @client.command()
 async def hit():
     if playingBlackJack is False:
-        await client.say("Type .blackjack to begin a game of blackjack")
+        await client.say("Type $blackjack to begin a game of blackjack")
         return
     global playerValue, playerCards, playerNumAces
     nextCard = random.randrange(1, 15)
@@ -278,7 +278,7 @@ async def hit():
 @client.command()
 async def stay():
     if playingBlackJack is False:
-        await client.say("Type .blackjack to begin a game of blackjack")
+        await client.say("Type $blackjack to begin a game of blackjack")
         return
     await resetBlackJack(0) #End the game
 
@@ -309,7 +309,7 @@ async def hangman():
     await client.say("Welcome to hangman.")
     await client.say("You have " + str(guessesLeft) + " "
                                                       "guesses to get all of the letters in the word.  "
-                                                      "To guess a letter, type .guess letter \n" + " ".join(blanks))
+                                                      "To guess a letter, type $guess letter \n" + " ".join(blanks))
 
 @client.command()
 async def guess(guess):
@@ -350,6 +350,6 @@ async def guess(guess):
             await client.say("ERROR: You can only guess with single letters that haven't already been entered.")
             await client.say("Guessed letters: " + " ".join(guessedLetters))
 
-    else: await client.say("Start a game of Hangman with .hangman before trying to guess a letter!")
+    else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
 
 client.run("MzY5ODUxMjYzNDgwODg5MzQ1.DNaewg.wyl3GmVwFUvNUCxrW1H50g34iSw")
