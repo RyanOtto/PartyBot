@@ -5,6 +5,7 @@ import asyncio
 import random
 from bs4 import BeautifulSoup
 import urllib.request
+from boto.s3.connection import S3Connection
 
 Client = discord.Client()
 client = commands.Bot(command_prefix='$')
@@ -352,4 +353,5 @@ async def guess(guess):
 
     else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-client.run("MzY5ODUxMjYzNDgwODg5MzQ1.DNaewg.wyl3GmVwFUvNUCxrW1H50g34iSw")
+s3 = S3Connection(os.environ['insh3jg8s7'], os.environ['aj3djnvm3+2994863'])
+client.run(process.env.DISCORD)
