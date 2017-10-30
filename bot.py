@@ -47,6 +47,25 @@ riddleLine = 0
 riddleGuessesLeft = 3
 prevRiddleLine = 0
 
+# Good Morning variables
+gmOptionEnabled = False
+
+@client.event
+async def on_message(message):
+    author = message.author
+    if str.lower(message.content) == 'good morning' or str.lower(message.content) == 'morning' or str.lower(message.content) == 'mornin':
+        await client.send_message(message.channel, 'Hello, ' + author)
+
+@client.command()
+async def morninggreet(nOrOff):
+    global gmOptionEnabled
+    if str.lower(onOrOff) == "on" and gmOptionEnabled == False:
+        gmOptionEnabled = True
+        await client.say("PartyBot will now greet people when they say good morning")
+    elif str.lower(onOrOff) == "off" and gmOptionEnabled == True:
+        gmOptionEnabled = False
+        await client.say("PartyBot will no longer greet people when they say good morning")
+
 @client.command()
 async def search(*, word):
     linkWord = word.replace(' ', '+')
@@ -124,7 +143,8 @@ async def help():
                      "\n$riddle -> Get a riddle to answer"
                      "\n$rps -> Start a new game of rock, paper, scissors "
                      "\nUTILITY\n$search <word> to search for a word's definition"
-                     "\n$usearch <word> to search for an urban dictionary word's definition`")
+                     "\n$usearch <word> to search for an urban dictionary word's definition`"
+                     "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')")
 
 @client.command()
 async def rps():
