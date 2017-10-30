@@ -47,7 +47,7 @@ riddleLine = 0
 riddleGuessesLeft = 3
 prevRiddleLine = 0
 
-# Good Morning variables
+# Good Morning variable
 gmOptionEnabled = False
 
 @client.event
