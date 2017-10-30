@@ -52,12 +52,15 @@ gmOptionEnabled = False
 
 @client.event
 async def on_message(message):
-    author = message.author
-    if str.lower(message.content) == 'good morning' or str.lower(message.content) == 'morning' or str.lower(message.content) == 'mornin':
-        await client.send_message(message.channel, 'Hello, ' + author)
+    global gmOptionEnabled
+    if gmOptionEnabled == True:
+        author = message.author
+        if str.lower(str(message.content)) == 'good morning' or str.lower(str(message.content)) == 'morning' or str.lower(str(message.content)) == 'mornin':
+            await client.send_message(message.channel, 'Good morning, ' + str(author))
+    await client.process_commands(message)
 
 @client.command()
-async def morninggreet(nOrOff):
+async def morninggreet(onOrOff):
     global gmOptionEnabled
     if str.lower(onOrOff) == "on" and gmOptionEnabled == False:
         gmOptionEnabled = True
@@ -143,8 +146,8 @@ async def help():
                      "\n$riddle -> Get a riddle to answer"
                      "\n$rps -> Start a new game of rock, paper, scissors "
                      "\nUTILITY\n$search <word> to search for a word's definition"
-                     "\n$usearch <word> to search for an urban dictionary word's definition`"
-                     "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')")
+                     "\n$usearch <word> to search for an urban dictionary word's definition"
+                     "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')`")
 
 @client.command()
 async def rps():
