@@ -86,17 +86,19 @@ async def usearch(*, word):
     page = urllib.request.urlopen(url)
     soup = BeautifulSoup(page.read(), "html.parser")
     definition = soup.find("div", {"class": "meaning"}).text
-    definition = definition.replace("&apos;", "")
+    definition = definition.replace("&apos;", "").replace("\n","")
     example = soup.find("div", {"class": "example"}).text
     thumbsUp = soup.find("a", {"class": "up"}).find("span", {"class": "count"}).text
     thumbsDown = soup.find("a", {"class": "down"}).find("span", {"class": "count"}).text
     tags = soup.find("div", {"class": "tags"}).text
     tags = tags.replace("#"," #")
+    withTags = True
+    if(len(tags) < 3 ): withTags = False
     contributor = soup.find("div", {"class": "contributor"}).find("a").text
-    contributeDate = soup.find("div", {"class": "contributor"}).text.replace("by","").replace(contributor,"").replace("  "," ")
-
-    example = example.replace("&apos;", "")
-    await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\n#" + tags[2:] + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
+    contributeDate = soup.find("div", {"class": "contributor"}).text.replace("by","").replace(contributor,"").replace("  "," ").replace("\n","")
+    example = example.replace("&apos;", "").replace("\n","")
+    if(withTags): await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\n#" + tags[2:] + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
+    else: await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
 
 @client.command()
 async def riddle():
@@ -383,6 +385,7 @@ async def guess(guess):
             await client.say("Guessed letters: " + " ".join(guessedLetters))
 
     else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
-  
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-client.run(os.environ['DISCORD'])
+
+# s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+# client.run(os.environ['DISCORD'])
+client.run("Mzc0NjIwODM1MzYyNzY2ODY4.DSfotA.n2tMOkXJMRY2wDoLylfBGmvX_4M")
