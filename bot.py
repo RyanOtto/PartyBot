@@ -77,7 +77,7 @@ async def search(*, word):
     soup = BeautifulSoup(page.read(), "html.parser")
     header = soup.find( "header", {"class":"luna-data-header"} ).text
     definition = soup.find( "div", {"class":"def-set"} ).text
-    await client.say(word + ":" + header + definition[3:])
+    await client.say("**" + word + ":" + header + definition[3:] + "**")
 
 @client.command()
 async def usearch(*, word):
@@ -384,5 +384,5 @@ async def guess(guess):
 
     else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-client.run(os.environ['DISCORD'])
+# s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+client.run('Mzc0NjIwODM1MzYyNzY2ODY4.DSfXJQ.NuyBd8UZaxU1zUNVAEbXIGjMImY')
