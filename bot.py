@@ -88,8 +88,15 @@ async def usearch(*, word):
     definition = soup.find("div", {"class": "meaning"}).text
     definition = definition.replace("&apos;", "")
     example = soup.find("div", {"class": "example"}).text
+    thumbsUp = soup.find("a", {"class": "up"}).find("span", {"class": "count"}).text
+    thumbsDown = soup.find("a", {"class": "down"}).find("span", {"class": "count"}).text
+    tags = soup.find("div", {"class": "tags"}).text
+    tags = tags.replace("#"," #")
+    contributor = soup.find("div", {"class": "contributor"}).find("a").text
+    contributeDate = soup.find("div", {"class": "contributor"}).text.replace("by","").replace(contributor,"").replace("  "," ")
+
     example = example.replace("&apos;", "")
-    await client.say(word + ": " + definition + "\n\n" + example)
+    await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\n#" + tags[2:] + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
 
 @client.command()
 async def riddle():
