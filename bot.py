@@ -100,6 +100,26 @@ async def usearch(*, word):
     if(withTags): await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\n#" + tags[2:] + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
     else: await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
 
+
+@client.command()
+async def et(*, word):
+    word = str.lower(word).replace('eggplant',':eggplant:').replace('I',':eye:').replace('love',':heart_eyes:')\
+        .replace('you',':point_up_2:').replace('bored', ':sleeping:').replace('hungry',':eggplant:')\
+        .replace('happy', ':eggplant:').replace('sad',':eggplant:').replace('angry',':eggplant:') \
+        .replace('say', ':eggplant:').replace('dont', ':eggplant:').replace('think', ':thinking:')\
+        .replace('lol', ':laughing:').replace('tired', ':sleeping:').replace('sleepy', ':sleeping:')\
+        .replace('am', ':regional_indicator_i: :regional_indicator_s:').replace('is', ':regional_indicator_i: :regional_indicator_s:')
+
+    await client.say(word)
+
+
+@client.command()
+@commands.has_permissions(administrator=True)
+async def delete(channel: discord.Channel, numberOfMessages):
+    async for message in client.logs_from(channel, limit=int(numberOfMessages)):
+        await client.delete_message(message)
+
+
 @client.command()
 async def riddle():
     global riddle, riddleLine, prevRiddleLine, riddleAnswer, riddleGuessesLeft, answering
@@ -156,6 +176,8 @@ async def help():
                      "\n$rps -> Start a new game of rock, paper, scissors "
                      "\nUTILITY\n$search <word> to search for a word's definition"
                      "\n$usearch <word> to search for an urban dictionary word's definition"
+                     "\n$et <phrase> to translate the phrase into emoji"
+                     "\n$delete <channel name> <number> to delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel"
                      "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')`")
 
 @client.command()
@@ -386,5 +408,4 @@ async def guess(guess):
 
     else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-client.run(os.environ['DISCORD'])
+client.run('Mzc0NjIwODM1MzYyNzY2ODY4.DTbSWA.WekEysBCXWRWDb4bA663tEgkcmE')
