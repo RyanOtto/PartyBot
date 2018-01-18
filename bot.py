@@ -438,6 +438,5 @@ async def guess(guess):
 
     else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-# s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-# client.run(os.environ['DISCORD'])
-client.run('Mzc0NjIwODM1MzYyNzY2ODY4.DUJVrw.ej1B4i6dcuYsjHoGJnTehTFknRI')
+s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+client.run(os.environ['DISCORD'])
