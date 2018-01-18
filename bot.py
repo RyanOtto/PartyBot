@@ -5,6 +5,7 @@ import asyncio
 import random
 from bs4 import BeautifulSoup
 import urllib.request
+import re
 import os
 from boto.s3.connection import S3Connection
 
@@ -103,12 +104,41 @@ async def usearch(*, word):
 
 @client.command()
 async def et(*, word):
-    word = str.lower(word).replace('eggplant',':eggplant:').replace('I',':eye:').replace('love',':heart_eyes:')\
-        .replace('you',':point_up_2:').replace('bored', ':sleeping:').replace('hungry',':eggplant:')\
-        .replace('happy', ':eggplant:').replace('sad',':eggplant:').replace('angry',':eggplant:') \
-        .replace('say', ':eggplant:').replace('dont', ':eggplant:').replace('think', ':thinking:')\
+    word = str.lower(word)
+    word = word.replace('eggplant',':eggplant:').replace('i',':eye:').replace('love',':heart_eyes:') \
+        .replace('you', ':point_up_2:').replace('bored', ':sleeping:').replace('hungry',':eggplant:')\
+        .replace('happy', ':smiley_cat:').replace('sad',':sweat_drops:').replace('angry',':anger:') \
+        .replace('say', ':speech_left:').replace('dont', ':no_entry_sign: ').replace('think', ':thinking:')\
         .replace('lol', ':laughing:').replace('tired', ':sleeping:').replace('sleepy', ':sleeping:')\
-        .replace('am', ':regional_indicator_i: :regional_indicator_s:').replace('is', ':regional_indicator_i: :regional_indicator_s:')
+        .replace('am', ':regional_indicator_i: :regional_indicator_s:').replace('is', ':regional_indicator_i: :regional_indicator_s:') \
+        .replace('person', ':man_dancing:').replace('girl', ':man_dancing:').replace('guy', ':man_dancing:') \
+        .replace('man', ':man_dancing:').replace('woman', ':man_dancing:').replace('lady', ':man_dancing:') \
+        .replace('people', ':man_dancing:').replace('hate', ':angry:').replace('dislike', ':angry:') \
+        .replace('barbecue', ':hamburger:').replace('bbq', '').replace('ye ', ':ok_hand:') \
+        .replace('alone', ':broken_heart:').replace('and', ':open_hands:').replace('&', ':open_hands:')\
+        .replace('can', ':canoe:').replace('cant', ':no_entry:').replace('mine', ':pick:')\
+        .replace('mining', ':pick:').replace('dollars', ':euro:').replace('cash', ':euro:') \
+        .replace('bucks', ':euro:').replace('money', ':euro:').replace('furry', ':smiley_cat:').replace('cat', ':smiley_cat:') \
+        .replace('lovely', ':heart_decoration:').replace('wonderful', ':heart_decoration:') \
+        .replace('lmao', ':rofl: :rofl:').replace('lmaoo', ':rofl: :rofl:').replace('rofl', ':rofl: :rofl:') \
+        .replace('guitar', '🎸').replace('music', ':notes:').replace('musical', ':notes:').replace('art', ':art:') \
+        .replace('beer', ':beers:').replace('beers', ':beers:').replace('alcohol', ':beers:').replace('wine', ':wine_glass:') \
+        .replace('sports', ':soccer:').replace('sport', ':soccer: ').replace('olympics', ':medal:').replace('olympic', ':medal:') \
+        .replace('musician', '🎸').replace('star', ':stars:').replace('stars', ':stars:').replace('shooting star', ':stars:') \
+        .replace('loves', ':heart_eyes:')
+
+    word = re.sub(r"\bu\b", ":point_up_2:", word)
+    word = re.sub(r"\bk\b", ":ok_hand:", word)
+    word = re.sub(r"\bok\b", ":ok_hand:", word)
+    word = re.sub(r"\bokay\b", ":ok_hand:", word)
+    word = re.sub(r"\bye\b", ":ok_hand:", word)
+    word = re.sub(r"\bya\b", ":ok_hand:", word)
+    word = re.sub(r"\byes\b", ":ok_hand:", word)
+    word = re.sub(r"\byeh\b", ":ok_hand:", word)
+    word = re.sub(r"\bare\b", ":regional_indicator_r:", word)
+
+
+
 
     await client.say(word)
 
@@ -116,7 +146,7 @@ async def et(*, word):
 @client.command()
 @commands.has_permissions(administrator=True)
 async def delete(channel: discord.Channel, numberOfMessages):
-    async for message in client.logs_from(channel, limit=int(numberOfMessages)):
+    async for message in client.logs_from(channel, limit=int(numberOfMessages)+1):
         await client.delete_message(message)
 
 
@@ -162,10 +192,10 @@ async def answer(userAnswer):
     if riddleGuessesLeft == 0:
         await client.say("Out of guesses!  The answer was: " + riddleAnswer)
 
-@client.event 
-async def on_ready(): 
-    print("Bot Online!") 
-    print("Name: {}".format(client.user.name)) 
+@client.event
+async def on_ready():
+    print("Bot Online!")
+    print("Name: {}".format(client.user.name))
     print("ID: {}".format(client.user.id))
 
 @client.command()
@@ -408,5 +438,6 @@ async def guess(guess):
 
     else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-client.run(os.environ['DISCORD'])
+# s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+# client.run(os.environ['DISCORD'])
+client.run('Mzc0NjIwODM1MzYyNzY2ODY4.DUJVrw.ej1B4i6dcuYsjHoGJnTehTFknRI')
