@@ -105,41 +105,81 @@ async def usearch(*, word):
 @client.command()
 async def et(*, word):
     word = str.lower(word)
-    word = word.replace('eggplant',':eggplant:').replace('i',':eye:').replace('love',':heart_eyes:') \
-        .replace('you', ':point_up_2:').replace('bored', ':sleeping:').replace('hungry',':eggplant:')\
-        .replace('happy', ':smiley_cat:').replace('sad',':sweat_drops:').replace('angry',':anger:') \
-        .replace('say', ':speech_left:').replace('dont', ':no_entry_sign: ').replace('think', ':thinking:')\
-        .replace('lol', ':laughing:').replace('tired', ':sleeping:').replace('sleepy', ':sleeping:')\
-        .replace('am', ':regional_indicator_i: :regional_indicator_s:').replace('is', ':regional_indicator_i: :regional_indicator_s:') \
-        .replace('person', ':man_dancing:').replace('girl', ':man_dancing:').replace('guy', ':man_dancing:') \
-        .replace('man', ':man_dancing:').replace('woman', ':man_dancing:').replace('lady', ':man_dancing:') \
-        .replace('people', ':man_dancing:').replace('hate', ':angry:').replace('dislike', ':angry:') \
-        .replace('barbecue', ':hamburger:').replace('bbq', '').replace('ye ', ':ok_hand:') \
-        .replace('alone', ':broken_heart:').replace('and', ':open_hands:').replace('&', ':open_hands:')\
-        .replace('can', ':canoe:').replace('cant', ':no_entry:').replace('mine', ':pick:')\
-        .replace('mining', ':pick:').replace('dollars', ':euro:').replace('cash', ':euro:') \
-        .replace('bucks', ':euro:').replace('money', ':euro:').replace('furry', ':smiley_cat:').replace('cat', ':smiley_cat:') \
+    word = word.replace('eggplant',':eggplant:').replace('bored', ':sleeping:').replace('hungry',':eggplant:')\
+        .replace('happy', ':smiley_cat:').replace('angry',':anger:').replace('dont', ':no_entry_sign: ')\
+        .replace('think', ':thinking:').replace('tired', ':sleeping:').replace('sleepy', ':sleeping:')\
+        .replace('people', ':man_dancing:').replace('hate', ':angry:').replace('.', ':end:').replace('?', ':question:')\
+        .replace('dislike', ':angry:').replace('barbecue', ':hamburger:').replace('bbq', '').replace('alone', ':broken_heart:')\
+        .replace('mine', ':pick:').replace('mining', ':pick:').replace('dollars', ':euro:').replace('cash', ':euro:')\
+        .replace('bucks', ':euro:').replace('money', ':euro:').replace('furry', ':smiley_cat:')\
         .replace('lovely', ':heart_decoration:').replace('wonderful', ':heart_decoration:') \
-        .replace('lmao', ':rofl: :rofl:').replace('lmaoo', ':rofl: :rofl:').replace('rofl', ':rofl: :rofl:') \
-        .replace('guitar', '🎸').replace('music', ':notes:').replace('musical', ':notes:').replace('art', ':art:') \
-        .replace('beer', ':beers:').replace('beers', ':beers:').replace('alcohol', ':beers:').replace('wine', ':wine_glass:') \
-        .replace('sports', ':soccer:').replace('sport', ':soccer: ').replace('olympics', ':medal:').replace('olympic', ':medal:') \
-        .replace('musician', '🎸').replace('star', ':stars:').replace('stars', ':stars:').replace('shooting star', ':stars:') \
-        .replace('loves', ':heart_eyes:')
+        .replace('lmaoo', ':rofl: :rofl:').replace('rofl', ':rofl: :rofl:').replace('!', ':grey_exclamation:') \
+        .replace('guitar', ':guitar:').replace('musical', ':notes:').replace('alcohol', ':beers:').replace('wine', ':wine_glass:')\
+        .replace('sports', ':soccer:').replace('sport', ':soccer: ').replace('olympics', ':medal:').replace('musician', ':guitar:')\
+        .replace('stars', ':stars:').replace('shooting star', ':stars:').replace('loves', ':heart_eyes:')
 
     word = re.sub(r"\bu\b", ":point_up_2:", word)
+    word = re.sub(r"\bperson\b", ":man_dancing:", word)
+    word = re.sub(r"\bman\b", ":man_dancing:", word)
+    word = re.sub(r"\bwoman\b", ":man_dancing:", word)
+    word = re.sub(r"\bgirl\b", ":man_dancing:", word)
+    word = re.sub(r"\bguy\b", ":man_dancing:", word)
+    word = re.sub(r"\blady\b", ":man_dancing:", word)
+    word = re.sub(r"\bo\b", "  :regional_indicator_o:  ", word)
+    word = re.sub(r"\ba\b", "  :a:  ", word)
+    word = re.sub(r"\bcat\b", ":smiley_cat:", word)
+    word = re.sub(r"\bsad\b", ":sweat_drops:", word)
+    word = re.sub(r"\bi\b", ":eye:", word)
+    word = re.sub(r"\bim\b", ":eye:", word)
+    word = re.sub(r"\bnot\b", ":no_good:", word)
     word = re.sub(r"\bk\b", ":ok_hand:", word)
     word = re.sub(r"\bok\b", ":ok_hand:", word)
     word = re.sub(r"\bokay\b", ":ok_hand:", word)
     word = re.sub(r"\bye\b", ":ok_hand:", word)
     word = re.sub(r"\bya\b", ":ok_hand:", word)
     word = re.sub(r"\byes\b", ":ok_hand:", word)
+    word = re.sub(r"\byou\b", ":point_up_2:", word)
     word = re.sub(r"\byeh\b", ":ok_hand:", word)
-    word = re.sub(r"\bare\b", ":regional_indicator_r:", word)
-
-
-
-
+    word = re.sub(r"\bno\b", ":no_entry_sign:", word)
+    word = re.sub(r"\bye\b", ":ok_hand:", word)
+    word = re.sub(r"\bare\b", "  :regional_indicator_r:  ", word)
+    word = re.sub(r"\bam\b", "  :regional_indicator_i: :regional_indicator_s:  ", word)
+    word = re.sub(r"\bis\b", "  :regional_indicator_i::regional_indicator_s:  ", word)
+    word = re.sub(r"\bcan\b", ":canoe:", word)
+    word = re.sub(r"\bcant\b", ":no_entry:", word)
+    word = re.sub(r"\band\b", ":open_hands:", word)
+    word = re.sub(r"\b&\b", ":open_hands:", word)
+    word = re.sub(r"\bmusic\b", ":notes:", word)
+    word = re.sub(r"\bart\b", ":art:", word)
+    word = re.sub(r"\bolympic\b", ":medal:", word)
+    word = re.sub(r"\blove\b", ":heart_eyes:", word)
+    word = re.sub(r"\blove\b", ":heart:", word)
+    word = re.sub(r"\bstar\b", ":stars:", word)
+    word = re.sub(r"\blmao\b", ":rofl: :rofl:", word)
+    word = re.sub(r"\bbeer\b", ":beers:", word)
+    word = re.sub(r"\bbeers\b", ":beers:", word)
+    word = re.sub(r"\bsay\b", ":speech_left:", word)
+    word = re.sub(r"\bcode\b", ":desktop:", word)
+    word = re.sub(r"\bprogram\b", ":desktop:", word)
+    word = re.sub(r"\bprogramming\b", ":desktop:", word)
+    word = re.sub(r"\bthis\b", ":point_down:", word)
+    word = re.sub(r"\bits\b", ":point_down:", word)
+    word = re.sub(r"\bwrite\b", ":pen_ballpoint:", word)
+    word = re.sub(r"\writing\b", ":pen_ballpoint:", word)
+    word = re.sub(r"\bpen\b", ":pen_ballpoint:", word)
+    word = re.sub(r"\bpencil\b", ":pencil2:", word)
+    word = re.sub(r"\bbut\b", ":shrug:", word)
+    word = re.sub(r"\bgood\b", ":thumbsup:", word)
+    word = re.sub(r"\bgreat\b", ":thumbsup: :thumbsup:", word)
+    word = re.sub(r"\blol\b", ":laughing:", word)
+    word = re.sub(r"\bbread\b", ":french_bread:", word)
+    word = re.sub(r"\btoast\b", ":bread:", word)
+    word = re.sub(r"\bcake\b", ":cake:", word)
+    word = re.sub(r"\bcookie\b", ":cookie:", word)
+    word = re.sub(r"\bpretty\b", ":white_flower:", word)
+    word = re.sub(r"\bbeautiful\b", ":white_flower:", word)
+    word = re.sub(r"\bdelightful\b", ":white_flower:", word)
+    word = re.sub(r"\buwu\b", ":sunflower::white_flower::sunflower:", word)
     await client.say(word)
 
 
