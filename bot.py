@@ -81,6 +81,15 @@ async def search(*, word):
     await client.say("**" + word + ":" + header + definition[3:] + "**")
 
 @client.command()
+async def yt(*, word):
+    linkWord = word.replace(' ', '+')
+    url = 'https://www.youtube.com/results?sp=EgIQAQ%253D%253D&search_query=' + linkWord
+    page = urllib.request.urlopen(url)
+    soup = BeautifulSoup(page.read(), "html.parser")
+    vidLink = soup.find("div", {"class": "yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix"}).get("data-context-item-id")
+    await client.say("https://www.youtube.com/watch?v=" + vidLink)
+
+@client.command()
 async def usearch(*, word):
     linkWord = word.replace(' ', '+')
     url = 'https://www.urbandictionary.com/define.php?term=' + linkWord
@@ -153,7 +162,7 @@ async def et(*, word):
     word = re.sub(r"\bart\b", ":art:", word)
     word = re.sub(r"\bolympic\b", ":medal:", word)
     word = re.sub(r"\blove\b", ":heart_eyes:", word)
-    word = re.sub(r"\blove\b", ":heart:", word)
+    word = re.sub(r"\blike\b", ":heart:", word)
     word = re.sub(r"\bstar\b", ":stars:", word)
     word = re.sub(r"\blmao\b", ":rofl: :rofl:", word)
     word = re.sub(r"\bbeer\b", ":beers:", word)
@@ -246,6 +255,7 @@ async def help():
                      "\n$rps -> Start a new game of rock, paper, scissors "
                      "\nUTILITY\n$search <word> to search for a word's definition"
                      "\n$usearch <word> to search for an urban dictionary word's definition"
+                     "\n$yt <video name> to search for the most relevant YouTube video given the name"
                      "\n$et <phrase> to translate the phrase into emoji"
                      "\n$delete <channel name> <number> to delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel"
                      "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')`")
