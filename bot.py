@@ -90,6 +90,20 @@ async def yt(*, word):
     await client.say("https://www.youtube.com/watch?v=" + vidLink)
 
 @client.command()
+async def img(*, word):
+    linkWord = word.replace(' ', '+')
+    url = "https://imgur.com/search/time?q=" + linkWord + "&qs=thumbs"
+    page = urllib.request.urlopen(url)
+    soup = BeautifulSoup(page.read(), "html.parser")
+    imgLinkList = soup.find_all("a", {"class": "image-list-link"})
+    print(len(imgLinkList))
+    imgLink = imgLinkList[random.randrange(0,len(imgLinkList))]
+    imgLink = imgLink.get("href")
+    # imgLink = imgContainerLink.find("img").get("src")
+    # await client.say(imgLink.replace("//i.imgur.com/","https://i.imgur.com/"))
+    await client.say("https://imgur.com/" + imgLink)
+
+@client.command()
 async def usearch(*, word):
     linkWord = word.replace(' ', '+')
     url = 'https://www.urbandictionary.com/define.php?term=' + linkWord
@@ -257,6 +271,7 @@ async def help():
                      "\n$usearch <word> to search for an urban dictionary word's definition"
                      "\n$yt <video name> to search for the most relevant YouTube video given the name"
                      "\n$et <phrase> to translate the phrase into emoji"
+                     "\n$img <name> to show a randomly chosen, recent and related image from imgur"
                      "\n$delete <channel name> <number> to delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel"
                      "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')`")
 
