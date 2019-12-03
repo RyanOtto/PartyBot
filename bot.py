@@ -267,13 +267,13 @@ async def help():
                      "\n$blackjack -> Start a new game of blackjack"
                      "\n$riddle -> Get a riddle to answer"
                      "\n$rps -> Start a new game of rock, paper, scissors "
-                     "\nUTILITY\n$search <word> to search for a word's definition"
-                     "\n$usearch <word> to search for an urban dictionary word's definition"
-                     "\n$yt <video name> to search for the most relevant YouTube video given the name"
-                     "\n$et <phrase> to translate the phrase into emoji"
-                     "\n$img <name> to show a randomly chosen, recent and related image from imgur"
-                     "\n$delete <channel name> <number> to delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel"
-                     "\n$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')`")
+                     "\nUTILITY\n$search <word> -> search for a word's definition"
+                     "\n$usearch <word> -> search for an urban dictionary word's definition"
+                     "\n$yt <video name> -> search for the most relevant YouTube video given the name"
+                     "\n$et <phrase> -> translate the phrase into emoji"
+                     "\n$img <name> -> show a randomly chosen, recent and related image from imgur"
+                     "\n$delete <channel name> <number> -> delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel"
+                     "\n$morninggreet <on/off> -> turn on bot greeting in response to user greetings (IE 'good morning')`")
 
 @client.command()
 async def rps():
