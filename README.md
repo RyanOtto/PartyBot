@@ -14,17 +14,17 @@ $riddle -> Get a riddle to answer
 $rps -> Start a new game of rock, paper, scissors 
 
 # Commands - Utility
-$search <word> to search for a word's definition
+$search <word> -> search for a word's definition
   
-$usearch <word> to search for an urban dictionary word's definition
+$usearch <word> -> search for an urban dictionary word's definition
   
-$yt <video name> to search for the most relevant YouTube video given the name
+$yt <video name> -> search for the most relevant YouTube video given the name
   
-$et <phrase> to translate the phrase into emoji
+$et <phrase> -> translate the phrase into emoji
   
-$img <name> to show a randomly chosen, recent and related image from imgur
+$img <name> -> show a randomly chosen, recent and related image from imgur
   
-$delete <channel name> <number> to delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel
+$delete <number> -> delete the last <number> messages from current channel
   
-$morninggreet <on/off> to turn on bot greeting in response to user greetings (IE 'good morning')
+$morninggreet <on/off> -> turn on bot greeting in response to user greetings (IE 'good morning')
 
