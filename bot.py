@@ -8,6 +8,7 @@ import urllib.request
 import re
 import os
 from boto.s3.connection import S3Connection
+import requests
 
 Client = discord.Client()
 client = commands.Bot(command_prefix='$')
@@ -51,6 +52,8 @@ prevRiddleLine = 0
 # Good Morning variable
 gmOptionEnabled = False
 
+print(f"discord.py {discord.__version__}\n")
+
 @client.event
 async def on_message(message):
     global gmOptionEnabled
@@ -61,36 +64,41 @@ async def on_message(message):
     await client.process_commands(message)
 
 @client.command()
-async def morninggreet(onOrOff):
+async def morninggreet(ctx, onOrOff):
     global gmOptionEnabled
     if str.lower(onOrOff) == "on" and gmOptionEnabled == False:
         gmOptionEnabled = True
-        await client.say("PartyBot will now greet people when they say good morning")
+        await ctx.send("PartyBot will now greet people when they say good morning")
     elif str.lower(onOrOff) == "off" and gmOptionEnabled == True:
         gmOptionEnabled = False
-        await client.say("PartyBot will no longer greet people when they say good morning")
+        await ctx.send("PartyBot will no longer greet people when they say good morning")
 
 @client.command()
-async def search(*, word):
+async def search(ctx, *, word):
+    definition = ""
     linkWord = word.replace(' ', '+')
-    url = 'http://www.dictionary.com/browse/' + linkWord
+    url = 'https://www.wordnik.com/words/' + linkWord
     page = urllib.request.urlopen(url)
     soup = BeautifulSoup(page.read(), "html.parser")
-    header = soup.find( "header", {"class":"luna-data-header"} ).text
-    definition = soup.find( "div", {"class":"def-set"} ).text
-    await client.say("**" + word + ":" + header + definition[3:] + "**")
+    definition = soup.select_one('.active > h3:nth-child(1)').text + "\n\n" + soup.select_one(".active > ul:nth-child(2) > li:nth-child(1)").text
+    await ctx.send("**" + word + "\n\n" + definition + "**")
 
 @client.command()
-async def yt(*, word):
+async def yt(ctx, *, word):
     linkWord = word.replace(' ', '+')
     url = 'https://www.youtube.com/results?sp=EgIQAQ%253D%253D&search_query=' + linkWord
-    page = urllib.request.urlopen(url)
-    soup = BeautifulSoup(page.read(), "html.parser")
-    vidLink = soup.find("div", {"class": "yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix"}).get("data-context-item-id")
-    await client.say("https://www.youtube.com/watch?v=" + vidLink)
+    page = requests.get(url)
+    soup = str(BeautifulSoup(page.text, "lxml"))
+    print(soup)
+    # find first instance of /watch?v= until "
+    vidLinkFirst = soup.find("/watch?v=")
+    vidLinkLast = soup.find('"', vidLinkFirst)
+    print(soup[vidLinkFirst:vidLinkLast])
+    vidLink = soup[vidLinkFirst:vidLinkLast]
+    await ctx.send("https://www.youtube.com/" + vidLink)
 
 @client.command()
-async def img(*, word):
+async def img(ctx, *, word):
     linkWord = word.replace(' ', '+')
     url = "https://imgur.com/search/time?q=" + linkWord + "&qs=thumbs"
     page = urllib.request.urlopen(url)
@@ -100,11 +108,11 @@ async def img(*, word):
     imgLink = imgLinkList[random.randrange(0,len(imgLinkList))]
     imgLink = imgLink.get("href")
     # imgLink = imgContainerLink.find("img").get("src")
-    # await client.say(imgLink.replace("//i.imgur.com/","https://i.imgur.com/"))
-    await client.say("https://imgur.com/" + imgLink)
+    # await ctx.send(imgLink.replace("//i.imgur.com/","https://i.imgur.com/"))
+    await ctx.send("https://imgur.com/" + imgLink)
 
 @client.command()
-async def usearch(*, word):
+async def usearch(ctx, *, word):
     linkWord = word.replace(' ', '+')
     url = 'https://www.urbandictionary.com/define.php?term=' + linkWord
     page = urllib.request.urlopen(url)
@@ -114,19 +122,14 @@ async def usearch(*, word):
     example = soup.find("div", {"class": "example"}).text
     thumbsUp = soup.find("a", {"class": "up"}).find("span", {"class": "count"}).text
     thumbsDown = soup.find("a", {"class": "down"}).find("span", {"class": "count"}).text
-    tags = soup.find("div", {"class": "tags"}).text
-    tags = tags.replace("#"," #")
-    withTags = True
-    if(len(tags) < 3 ): withTags = False
     contributor = soup.find("div", {"class": "contributor"}).find("a").text
     contributeDate = soup.find("div", {"class": "contributor"}).text.replace("by","").replace(contributor,"").replace("  "," ").replace("\n","")
     example = example.replace("&apos;", "").replace("\n","")
-    if(withTags): await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\n#" + tags[2:] + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
-    else: await client.say("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + "  :thumbsdown:" + thumbsDown + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
+    await ctx.send("**" + word + ": " + definition + "\n\n" + example + "\n\n" + ":thumbsup:" + thumbsUp + " :thumbsdown:" + thumbsDown + "\n\nContributed by " + contributor + " on" + contributeDate + "**")
 
 
 @client.command()
-async def et(*, word):
+async def et(ctx, *, word):
     word = str.lower(word)
     word = word.replace('eggplant',':eggplant:').replace('bored', ':sleeping:').replace('hungry',':eggplant:')\
         .replace('happy', ':smiley_cat:').replace('angry',':anger:').replace('dont', ':no_entry_sign: ')\
@@ -203,18 +206,18 @@ async def et(*, word):
     word = re.sub(r"\bbeautiful\b", ":white_flower:", word)
     word = re.sub(r"\bdelightful\b", ":white_flower:", word)
     word = re.sub(r"\buwu\b", ":sunflower::white_flower::sunflower:", word)
-    await client.say(word)
+    await ctx.send(word)
 
 
 @client.command()
 @commands.has_permissions(administrator=True)
-async def delete(channel: discord.Channel, numberOfMessages):
-    async for message in client.logs_from(channel, limit=int(numberOfMessages)+1):
-        await client.delete_message(message)
+async def delete(ctx, numberOfMessages):
+    async for message in ctx.channel.history(limit=int(numberOfMessages)+1):
+        await message.delete()
 
 
 @client.command()
-async def riddle():
+async def riddle(ctx):
     global riddle, riddleLine, prevRiddleLine, riddleAnswer, riddleGuessesLeft, answering
     answering = True
     riddle = ""
@@ -233,27 +236,27 @@ async def riddle():
     riddleAnswer = riddleAnswer.replace("=", "")
     riddleAnswer = riddleAnswer.replace(" ", "")
 
-    await client.say("Use $answer <word> to solve the riddle.  All answers to these riddles will be one word or number.  You have three guesses per riddle.\n\n" + "`"+riddle+"`")
+    await ctx.send("Use $answer <word> to solve the riddle.  All answers to these riddles will be one word or number.  You have three guesses per riddle.\n\n" + "`"+riddle+"`")
 
 @client.command()
-async def answer(userAnswer):
+async def answer(ctx, userAnswer):
     global riddleAnswer, riddleGuessesLeft, answering
 
     if answering is False:
-        await client.say("Use $riddle to receive another riddle")
+        await ctx.send("Use $riddle to receive another riddle")
         return
 
-    userAnswer = userAnswer.strip()
-    riddleAnswer = riddleAnswer.strip()
+    userAnswer = userAnswer
+    riddleAnswer = riddleAnswer
 
     if str.lower(userAnswer) == str.lower(riddleAnswer):
-        await client.say("Correct!")
+        await ctx.send("Correct!")
         answering = False
     else:
         riddleGuessesLeft -= 1
-        await client.say("Incorrect!  Guesses left:" + str(riddleGuessesLeft))
+        await ctx.send("Incorrect!  Guesses left:" + str(riddleGuessesLeft))
     if riddleGuessesLeft == 0:
-        await client.say("Out of guesses!  The answer was: " + riddleAnswer)
+        await userAnswer.send("Out of guesses!  The answer was: " + riddleAnswer)
 
 @client.event
 async def on_ready():
@@ -262,8 +265,8 @@ async def on_ready():
     print("ID: {}".format(client.user.id))
 
 @client.command()
-async def help():
-    await client.say("`GAMES\n$hangman -> Start a new game of hangman"
+async def help(ctx):
+    await ctx.send("`GAMES\n$hangman -> Start a new game of hangman"
                      "\n$blackjack -> Start a new game of blackjack"
                      "\n$riddle -> Get a riddle to answer"
                      "\n$rps -> Start a new game of rock, paper, scissors "
@@ -276,8 +279,8 @@ async def help():
                      "\n$morninggreet <on/off> -> turn on bot greeting in response to user greetings (IE 'good morning')`")
 
 @client.command()
-async def rps():
-    await client.say("""`
+async def rps(ctx):
+    await ctx.send("""`
 ------           -     ------                        -----      -                        
 | ___ \         | |    | --- \                      /  ___|    (_)                       
 | |_/ /---   ---| | __ | |_/ /--- - --   ---  ----| \  --.  --- - --- ---  --- |----|--- 
@@ -288,16 +291,16 @@ async def rps():
                                  |_|                                                                                                                                              
     `""")
 
-    await client.say("Type $choose rock/paper/scissors to make your choice for the round.  First to 3 points wins! ")
+    await ctx.send("Type $choose rock/paper/scissors to make your choice for the round.  First to 3 points wins! ")
     global playingRPS
     playingRPS = True
 
 @client.command()
-async def choose(rockPaperOrScissors):
+async def choose(ctx, rockPaperOrScissors):
     global playingRPS, aiChoice, playerChoice, aiPoints, playerPoints
 
     if playingRPS is False:
-        await client.say("Type $rps to play a game of rock paper scissors!")
+        await ctx.send("Type $rps to play a game of rock paper scissors!")
         return
 
     #AI choice
@@ -310,27 +313,27 @@ async def choose(rockPaperOrScissors):
     if str.lower(rockPaperOrScissors) == "scissors": playerChoice = 3
 
     #See who won
-    await client.say("You picked: " + rockPaperOrScissors + " and AI picked: " + choiceList[aiChoice] + ".")
+    await ctx.send("You picked: " + rockPaperOrScissors + " and AI picked: " + choiceList[aiChoice] + ".")
     if playerChoice is 1 and aiChoice is 3 or playerChoice is 2 and aiChoice is 1 or playerChoice is 3 and aiChoice is 2:
         playerPoints += 1
-        await client.say("You win the round!")
+        await ctx.send("You win the round!")
     elif playerChoice == aiChoice:
-        await client.say("Tie!")
+        await ctx.send("Tie!")
     else:
         aiPoints += 1
-        await client.say("AI wins the round!")
+        await ctx.send("AI wins the round!")
 
     #End game if someone hit 3 points
     if playerPoints == 3:
-        await client.say("You hit 3 points.  You win!")
+        await ctx.send("You hit 3 points.  You win!")
         await endRPS()
         return
     if aiPoints == 3:
-        await client.say("AI hit 3 points.  You lose!")
+        await ctx.send("AI hit 3 points.  You lose!")
         await endRPS()
         return
-    await client.say("Type $choose <rock/paper/scissors> to continue. ")
-    await client.say("SCORE -> Player: " + str(playerPoints) + " AI: " + str(aiPoints))
+    await ctx.send("Type $choose <rock/paper/scissors> to continue. ")
+    await ctx.send("SCORE -> Player: " + str(playerPoints) + " AI: " + str(aiPoints))
 
 async def endRPS():
     global playingRPS, aiChoice, playerChoice, aiPoints, playerPoints
@@ -340,27 +343,27 @@ async def endRPS():
     aiPoints = 0
     playerPoints = 0
 
-async def printCards(playerOrComputer):
+async def printCards(ctx, playerOrComputer):
     if playerOrComputer is 1:
-        await client.say("Your value: " + str(playerValue))
-        await client.say("Your cards: " + str.join(" ", playerCards))
+        await ctx.send("Your value: " + str(playerValue))
+        await ctx.send("Your cards: " + str.join(" ", playerCards))
     elif playerOrComputer is 2:
-        await client.say("Dealer value: " + str(dealerValue))
-        await client.say("Dealer cards: " + str.join(" ", dealerCards))
+        await ctx.send("Dealer value: " + str(dealerValue))
+        await ctx.send("Dealer cards: " + str.join(" ", dealerCards))
     elif playerOrComputer is 3:
-        await client.say("Your value: " + str(playerValue))
-        await client.say("Your cards: " + str.join(" ", playerCards))
-        await client.say("Dealer value: " + str(dealerValue))
-        await client.say("Dealer cards: " + str.join(" ", dealerCards))
+        await ctx.send("Your value: " + str(playerValue))
+        await ctx.send("Your cards: " + str.join(" ", playerCards))
+        await ctx.send("Dealer value: " + str(dealerValue))
+        await ctx.send("Dealer cards: " + str.join(" ", dealerCards))
 
-async def resetBlackJack(finishedOrReset):
+async def resetBlackJack(ctx, finishedOrReset):
     global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
     if finishedOrReset is 0:
         await printCards(3) #Print both player and AI's values and cards
         if(playerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue < dealerValue):
-            await client.say("You lose!")
+            await ctx.send("You lose!")
         elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
-            await client.say("You win!")
+            await ctx.send("You win!")
         playingBlackJack = False
     dealerValue = 0
     playerValue = 0
@@ -370,8 +373,8 @@ async def resetBlackJack(finishedOrReset):
     playerNumAces = 0
 
 @client.command()
-async def blackjack():
-    await client.say("""`
+async def blackjack(ctx):
+    await ctx.send("""`
  _     _            _     _            _    
 | |__ | | __ _  ___| | __(_) __ _  ___| | __
 |  _ \| |/ _  |/ __| |/ /| |/ _  |/ __| |/ /
@@ -403,14 +406,14 @@ async def blackjack():
 
     #print("Dealer value: " + str(dealerValue))
     #print("Dealer cards: " + str.join(" ", dealerCards))
-    await client.say("Say $hit to be dealt another card, and $stay to stick with your current total value.")
-    await client.say("Dealer's first card is: " + dealerCards[0])
+    await ctx.send("Say $hit to be dealt another card, and $stay to stick with your current total value.")
+    await ctx.send("Dealer's first card is: " + dealerCards[0])
     await printCards(1) #Print player cards/value
 
 @client.command()
-async def hit():
+async def hit(ctx):
     if playingBlackJack is False:
-        await client.say("Type $blackjack to begin a game of blackjack")
+        await ctx.send("Type $blackjack to begin a game of blackjack")
         return
     global playerValue, playerCards, playerNumAces
     nextCard = random.randrange(1, 15)
@@ -427,14 +430,14 @@ async def hit():
     await printCards(1) #Print player cards/value
 
 @client.command()
-async def stay():
+async def stay(ctx):
     if playingBlackJack is False:
-        await client.say("Type $blackjack to begin a game of blackjack")
+        await ctx.send("Type $blackjack to begin a game of blackjack")
         return
     await resetBlackJack(0) #End the game
 
 @client.command()
-async def hangman():
+async def hangman(ctx):
     global playingHangman, word, guessesLeft, blanks, lettersFound, guessedLetters
     lines = []
     with open("hangmanwords.txt", "r") as f:
@@ -449,7 +452,7 @@ async def hangman():
     playingHangman = True
     for i in range(1, len(word)):
         blanks .append("-")
-    await client.say("""`                                                                      
+    await ctx.send("""`                                                                      
   _                                   
  | |_  ____ _ _  __ _ _ __  __ _ _ _  
  | - \/ -  | - \/ -  |  - \/ -  | - \ 
@@ -457,13 +460,13 @@ async def hangman():
                 |___/                                                                                                   
 `""")
 
-    await client.say("Welcome to hangman.")
-    await client.say("You have " + str(guessesLeft) + " "
+    await ctx.send("Welcome to hangman.")
+    await ctx.send("You have " + str(guessesLeft) + " "
                                                       "guesses to get all of the letters in the word.  "
                                                       "To guess a letter, type $guess letter \n" + " ".join(blanks))
 
 @client.command()
-async def guess(guess):
+async def guess(ctx, guess):
     global playingHangman
     global word
     global guessesLeft
@@ -473,35 +476,38 @@ async def guess(guess):
     if playingHangman is True:
         if str.isalpha(guess) and len(guess) is 1 and str.lower(guess) not in guessedLetters:
             if str.lower(guess) in word:
-                await client.say(guess + " is in the word.  Good job!")
+                await ctx.send(guess + " is in the word.  Good job!")
                 for i in range(0, len(word)):
                     if word[i] == str.lower(guess):
                         blanks[i] = str.lower(guess)
                         lettersFound += 1
 
             else:
-                await client.say(guess + " is NOT in the word.")
+                await ctx.send(guess + " is NOT in the word.")
                 guessesLeft -= 1
 
             guessedLetters.append(str.lower(guess))
-            await client.say(" ".join(blanks))
-            await client.say("Guessed letters: " + " ".join(guessedLetters))
-            await client.say("Guesses left: " + str(guessesLeft))
+            await ctx.send(" ".join(blanks))
+            await ctx.send("Guessed letters: " + " ".join(guessedLetters))
+            await ctx.send("Guesses left: " + str(guessesLeft))
             #print(lettersFound)
             #print(len(word))
 
             if guessesLeft == 0:
-                await client.say("No guesses left.  You lose!")
+                await ctx.send("No guesses left.  You lose!")
                 playingHangman = False
             if lettersFound == len(word)-1:
-                await client.say("You guessed all the letters!  You've won!  The word was: " + word)
+                await ctx.send("You guessed all the letters!  You've won!  The word was: " + word)
                 playingHangman = False
 
         else:
-            await client.say("ERROR: You can only guess with single letters that haven't already been entered.")
-            await client.say("Guessed letters: " + " ".join(guessedLetters))
+            await ctx.send("ERROR: You can only guess with single letters that haven't already been entered.")
+            await ctx.send("Guessed letters: " + " ".join(guessedLetters))
 
-    else: await client.say("Start a game of Hangman with $hangman before trying to guess a letter!")
+    else: await ctx.send("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-client.run(os.environ['DISCORD'])
+# s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+# client.run(os.environ['DISCORD'])
+
+s3 = S3Connection('374620835362766868', '2DfEu_LEjMEO7GuTerDrnyUH5G2ab5u9')
+client.run('Mzc0NjIwODM1MzYyNzY2ODY4.Wfdq1w.M4Jk5BsmtONwyBLv9sNHf6bEtE0')
