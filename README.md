@@ -1,7 +1,7 @@
 # PartyBot.py
 The PartyBot is a Discord.py bot meant to play games with users and offer some additional utility functions to your server.  
 
-You can invite the robot to servers on which you are admin <a href="https://discordapp.com/oauth2/authorize?client_id=369851263480889345&scope=bot&permissions=0">here</a>.
+You can invite the robot to servers on which you are an admin <a href="https://discordapp.com/oauth2/authorize?client_id=369851263480889345&scope=bot&permissions=0">here</a>.
 
 
 # Commands - Games
