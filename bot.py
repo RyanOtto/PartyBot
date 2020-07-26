@@ -54,13 +54,15 @@ gmOptionEnabled = False
 
 print(f"discord.py {discord.__version__}\n")
 
+
 @client.event
 async def on_message(message):
     global gmOptionEnabled
     if gmOptionEnabled == True:
         author = message.author
         if str.lower(str(message.content)) == 'good morning' or str.lower(str(message.content)) == 'morning' or str.lower(str(message.content)) == 'mornin':
-            await client.send_message(message.channel, 'Good morning, ' + str(author))
+            channel = message.channel
+            await channel.send('Good morning, ' + str(author))
     await client.process_commands(message)
 
 @client.command()
@@ -90,7 +92,6 @@ async def yt(ctx, *, word):
     page = requests.get(url)
     soup = str(BeautifulSoup(page.text, "lxml"))
     print(soup)
-    # find first instance of /watch?v= until "
     vidLinkFirst = soup.find("/watch?v=")
     vidLinkLast = soup.find('"', vidLinkFirst)
     print(soup[vidLinkFirst:vidLinkLast])
@@ -246,17 +247,18 @@ async def answer(ctx, userAnswer):
         await ctx.send("Use $riddle to receive another riddle")
         return
 
-    userAnswer = userAnswer
-    riddleAnswer = riddleAnswer
+    userAnswer = userAnswer.strip()
+    riddleAnswer = riddleAnswer.strip()
 
     if str.lower(userAnswer) == str.lower(riddleAnswer):
         await ctx.send("Correct!")
         answering = False
     else:
         riddleGuessesLeft -= 1
-        await ctx.send("Incorrect!  Guesses left:" + str(riddleGuessesLeft))
+        await ctx.send("Incorrect!  Guesses left: " + str(riddleGuessesLeft))
     if riddleGuessesLeft == 0:
-        await userAnswer.send("Out of guesses!  The answer was: " + riddleAnswer)
+        await ctx.send("Out of guesses!  The answer was: " + riddleAnswer)
+        answering = False
 
 @client.event
 async def on_ready():
@@ -275,7 +277,7 @@ async def help(ctx):
                      "\n$yt <video name> -> search for the most relevant YouTube video given the name"
                      "\n$et <phrase> -> translate the phrase into emoji"
                      "\n$img <name> -> show a randomly chosen, recent and related image from imgur"
-                     "\n$delete <channel name> <number> -> delete the last <number> messages from a specific channel (I.E. $delete general 100 to delete the last 100 messages in the general channel"
+                     "\n$delete <number> -> delete the last <number> messages from current channel"
                      "\n$morninggreet <on/off> -> turn on bot greeting in response to user greetings (IE 'good morning')`")
 
 @client.command()
@@ -359,7 +361,7 @@ async def printCards(ctx, playerOrComputer):
 async def resetBlackJack(ctx, finishedOrReset):
     global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
     if finishedOrReset is 0:
-        await printCards(3) #Print both player and AI's values and cards
+        await printCards(ctx, 3) #Print both player and AI's values and cards
         if(playerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue < dealerValue):
             await ctx.send("You lose!")
         elif(dealerValue > 21 or playerValue <= 21 and dealerValue <= 21 and playerValue > dealerValue):
@@ -382,7 +384,7 @@ async def blackjack(ctx):
 |_ __/|_|\__,_|\___|_|\_\/ |\__ _|\___|_|\_
                        |__/                                                                           
     `""")
-    await resetBlackJack(1)
+    await resetBlackJack(ctx, 1)
     global playingBlackJack, dealerValue, playerValue, dealerCards, playerCards, dealerNumAces, playerNumAces, cardNames, cardValues
     playingBlackJack = True
 
@@ -404,11 +406,9 @@ async def blackjack(ctx):
         playerValue += cardValues[nextCard]
         playerCards.append(cardNames[nextCard])
 
-    #print("Dealer value: " + str(dealerValue))
-    #print("Dealer cards: " + str.join(" ", dealerCards))
     await ctx.send("Say $hit to be dealt another card, and $stay to stick with your current total value.")
     await ctx.send("Dealer's first card is: " + dealerCards[0])
-    await printCards(1) #Print player cards/value
+    await printCards(ctx, 1) #Print player cards/value
 
 @client.command()
 async def hit(ctx):
@@ -425,16 +425,15 @@ async def hit(ctx):
             playerValue -= 10
             playerNumAces -= 1
         else:
-            await resetBlackJack(0)
+            await resetBlackJack(ctx, 0)
             break
-    await printCards(1) #Print player cards/value
 
 @client.command()
 async def stay(ctx):
     if playingBlackJack is False:
         await ctx.send("Type $blackjack to begin a game of blackjack")
         return
-    await resetBlackJack(0) #End the game
+    await resetBlackJack(ctx, 0) #End the game
 
 @client.command()
 async def hangman(ctx):
@@ -506,8 +505,5 @@ async def guess(ctx, guess):
 
     else: await ctx.send("Start a game of Hangman with $hangman before trying to guess a letter!")
 
-# s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-# client.run(os.environ['DISCORD'])
-
-s3 = S3Connection('374620835362766868', '2DfEu_LEjMEO7GuTerDrnyUH5G2ab5u9')
-client.run('Mzc0NjIwODM1MzYyNzY2ODY4.Wfdq1w.M4Jk5BsmtONwyBLv9sNHf6bEtE0')
+s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+client.run(os.environ['DISCORD'])
